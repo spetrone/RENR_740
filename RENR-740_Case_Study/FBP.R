@@ -20,7 +20,7 @@ latitude <- 55.476183
 longitude <- -112.027267
 elevation <- 500
 slope <- 0
-fuel_type <- "O1"
+fuel_type <- "C2"
 aspect <- 0
 
 burned_df <- read_csv("LWF161_BurnedFuel.csv")
@@ -50,7 +50,7 @@ input_FBP_df <- weather_df %>%
 
 # Define the 5 fuel types
 #selectin most dominant fuel codes
-fuel_types <- c("C1", "C2", "C3", "C4", "C5", "D1", "M1")
+fuel_types <- c( "C1", "C2",  "C4", "D2", "M2")
 
 
 # Create an empty list to store the dataframes for each fuel type
@@ -78,8 +78,8 @@ input_FBP_df
 FBP_df <- fbp(input_FBP_df)
 FBP_df
 
-# Sort the 'Value' column in ascending order
-FBP_df <- FBP_df[order(FBP_df$ID), ]
+
+#FBP_df <- FBP_df[order(FBP_df$ID), ]
 
 
 FBP_df2 <- cbind(FBP_df, input_FBP_df)
@@ -120,13 +120,12 @@ df_long_C2 <- FBP_C2 %>%
 # Create and store each plot in a list (one plot per variable)
 plots_list_C2 <- lapply(unique(df_long_C2$variable), function(var) {
   ggplot(subset(df_long_C2, variable == var), aes(x = WEATHER_DATE, y = value)) +
-    geom_vline(xintercept = held_date, linetype="dashed",color = "gray40", size=1.5) +
-    geom_vline(xintercept = under_control_date, linetype="dashed",color = "gray40", size=1.5) +
+    geom_vline(xintercept = held_date, linetype="dashed",color = "orangered3", size=1.5) +
+    geom_vline(xintercept = under_control_date, linetype="dashed",color = "orangered3", size=1.5) +
     # Add custom labels for each vertical line
     #geom_text(data = line_labels, aes(x = held_date, y = max(df_long_C2$value) + 5, 
               #                        label = label),
             #  color = "darkgrey", size = 4, angle = 90, vjust = -0.5) +  # Custom labels
-    
     geom_line(color = "blue") +  # Line color (you can adjust as needed)
     geom_point(color = "blue") + # Add points to the lines
     labs(x = "Date", y = var, title = paste(var, "for C2 Fuel Type")) +  # Add title
@@ -143,9 +142,14 @@ plots_list_C2 <- lapply(unique(df_long_C2$variable), function(var) {
 # Name each plot in the list with the variable names for easy access
 names(plots_list_C2) <- unique(df_long_C2$variable)
 # Example of how to access a plot, for instance for "CFB"
-CFB_plot <- plots_list_C2[["ROS"]]
+CFB_plot_CFB_C2 <- plots_list_C2[["CFB"]]
 
-CFB_plot
+CFB_plot_CFB_C2  <- CFB_plot_CFB_C2  + geom_hline(yintercept = 0.1, linetype="dashed", color="red", size=0.5)
+CFB_plot_CFB_C2  <- CFB_plot_CFB_C2  + geom_hline(yintercept = 0.9, linetype="dashed", color="red", size=0.5)
+
+CFB_plot_CFB_C2
+
+
 
 # Save each plot to a file, for example, as PNG files
 lapply(names(plots_list_C2), function(var) {
@@ -164,10 +168,10 @@ df_long <- FBP_df2 %>%
 
 plots_list <- lapply(unique(df_long$variable), function(var) {
   ggplot(subset(df_long, variable == var), aes(x = WEATHER_DATE, y = value, color = FuelType, group = FuelType)) +
-    geom_line() +  # Set line thickness for C1 to 1.5, others to 1
+    geom_line(size = 0.8) +  # Set line thickness for C1 to 1.5, others to 1
     geom_point() +    # Add points to the lines
-    geom_vline(xintercept = held_date, linetype="dashed",color = "gray40", size=1.5) +
-    geom_vline(xintercept = under_control_date, linetype="dashed",color = "gray40", size=1.5) +
+    geom_vline(xintercept = held_date, linetype="dashed",color = "darkorange", size=1.5) +
+    geom_vline(xintercept = under_control_date, linetype="dashed",color = "darkorange", size=1.5) +
     labs(x = "Date", y = var, title = paste(var, "by Fuel Type"), color = "Fuel Type") +  # Add legend title
     theme_minimal() + 
     theme(
@@ -177,8 +181,8 @@ plots_list <- lapply(unique(df_long$variable), function(var) {
     #  legend.position = c(0.9, 0.85)  # Position the legend inside the plot
     ) +
     scale_size_continuous(range = c(0.8, 1.5)) +  # Control the size scale for lines
-    scale_color_manual(values = c("C1" = "brown", "C2" = "chocolate", "C3" = "deepskyblue",
-                                  "C4" = "darkorchid1", "C5" = "slateblue", "D1" = "darkolivegreen3", "M1" = "aquamarine4"))  # Manually select colors
+    scale_color_manual(values = c("C1" = "brown", "C2" = "blue", "C3" = "deepskyblue",
+                                  "C4" = "darkorchid1", "C5" = "slateblue", "D2" = "darkolivegreen3", "M2" = "aquamarine4"))  # Manually select colors
 })
 
 
@@ -188,9 +192,12 @@ plots_list <- lapply(unique(df_long$variable), function(var) {
 names(plots_list) <- unique(df_long$variable)
 
 # Example of how to access a plot, for instance for "CFB"
-CFB_plot <- plots_list[["ROS"]]
+CFB_plot_CFB <- plots_list[["CFB"]]
 
-CFB_plot
+CFB_plot_CFB  <- CFB_plot_CFB  + geom_hline(yintercept = 0.1, linetype="dashed", color="red", size=0.5)
+CFB_plot_CFB  <- CFB_plot_CFB  + geom_hline(yintercept = 0.9, linetype="dashed", color="red", size=0.5)
+
+CFB_plot_CFB
 
 
 # Save each plot to a file, for example, as PNG files
