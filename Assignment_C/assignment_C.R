@@ -1,0 +1,83 @@
+library(readr)
+library(cffdrs)
+library(dplyr)
+library(ggplot2)
+
+#scorch height assumed to be roughly equal to length of flame
+#uses Byram's equation, given intensity to calculate flame length
+calc_scorch_ht <- function(I) {
+  L = 0.0775 * (I^0.46)
+  return(L)
+}
+
+
+#Probability of mortality using Beverly and Martell (2003)'s equation
+#Inputs: hsb (scorch height), dbh
+calc_p_mort <- function(hsb, dbh) {
+  p_mort = 1/ (1 + exp(1)^(-(-0.8587 + 0.3595*hsb - 0.0767*dbh)))
+}
+
+# Create data tables
+DBH <- c(10,20,30,40,50,60,70,80,90)
+
+#FuelType, LAT, LONG, ELV, FFMC, BUI, WS, WD
+# GS (Ground Slope), Dj (Julian day), hr, PC (percent conifer)
+conditions <- c("M-1", 48.127944, -91.3020208, 500, 93, 50, 5, 0, 280, 16, 75)
+conditions2 <- c("M-1", 48.127944, -91.3020208, 500, 93, 50, 25, 0, 280, 16, 75)
+
+conditions_df <- as.data.frame(t(conditions))
+colnames(conditions_df) <- c("FuelType", "LAT", "LONG", "ELV", "FFMC", "BUI", "WS", "GS", "Dj", "hr", "PC")
+conditions_df <- rbind(conditions_df, conditions2)
+
+# Convert the last 10 columns to numeric
+conditions_df[, (ncol(conditions_df)-9):ncol(conditions_df)] <- lapply(conditions_df[, (ncol(conditions_df)-9):ncol(conditions_df)], as.numeric)
+
+# Create the dataframe
+mortality_df <- data.frame(DBH = DBH, HSB = NA, p_mort = NA, intensity = NA)
+intens = fbp(conditions_df[1,])
+
+#Calculate intensity
+mortality_df <- mortality_df %>%
+  mutate(intensity = intens[1,5])
+
+#calculate the HSB for each
+mortality_df <- mortality_df %>%
+  mutate(HSB = calc_scorch_ht(mortality_df$intensity))
+
+#calculate p-mortality for each row
+mortality_df <- mortality_df %>%
+  mutate(p_mort = calc_p_mort(HSB, DBH))
+
+#plot it
+
+x_limit <- 90
+y_limit <- 0.75
+
+# Create the line plot
+plt1 <- ggplot(mortality_df, aes(x = DBH, y =p_mort)) + 
+  geom_line(color = "blue", size = 1.5) +      # Line color and size
+  #geom_point(color = "red", size = 3) +         # Points on the line
+  theme_minimal() +     
+  scale_y_continuous(limits = c(0, 0.8)) +# Minimal theme
+  labs(title = "Probability of White Pine Mortality by DBH",          # Title
+       x = "DBH (cm)",                           # X axis label
+       y = "Probability of Mortality") +                         # Y axis label
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),  # Center title
+    axis.title = element_text(size = 14),                         # Axis labels size
+    axis.text = element_text(size = 12)                          # Axis text size
+  ) + 
+  # Adding text annotations in the top-right corner
+  annotate("text", x = x_limit, y = y_limit, 
+           label = "Wind Speed: 5 km/h", color = "darkred", 
+           size = 5, hjust = 1, vjust = 1) +
+  annotate("text", x = x_limit, y = y_limit-0.05, 
+           label = "Intensity: 5509.14kW/m", color = "darkred", 
+           size = 5,  hjust = 1, vjust = 1)
+plt1
+# Save the table as a CSV file
+write.csv(mortality_df, "mortality_25kph.csv", row.names = FALSE)
+# Save the plot as a PNG file
+ggsave("mortality_5kph.png", plot = plt1, width = 8, height = 6)
+#save the input table
+write.csv(conditions_df, "conditions.csv", row.names = FALSE)

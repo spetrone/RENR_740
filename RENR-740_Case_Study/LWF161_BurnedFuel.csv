@@ -1,0 +1,22 @@
+VALUE,COUNT,FUEL_TYPE,FUEL_TYPE_
+1,502,C-1,C-1 (Spuce - Lichen Woodland)
+2,5502,C-2,C-2 (Boreal Spruce)
+3,305,C-3,C-3 (Mature Jack or Lodgepole Pine)
+4,579,C-4,C-4 (Immature Jack or Lodgepole Pine)
+5,8,C-5,C-5 (Red and White Pine)
+13,372,D-1/D-2,D-1/D-2 (Aspen)
+31,724,O-1,O-1 (Grass)
+101,1880,Non-Fuel,Non-Fuel
+102,6,Water,Water
+105,162,Vegetated Non-Fuel,Vegetated Non-Fuel
+620,77,M-1/M-2 (20 PC),M-1/M-2 (Boreal Mixedwood - 20% Conifer)
+630,286,M-1/M-2 (30 PC),M-1/M-2 (Boreal Mixedwood - 30% Conifer)
+635,3,M-1/M-2 (35 PC),M-1/M-2 (Boreal Mixedwood - 35% Conifer)
+640,48,M-1/M-2 (40 PC),M-1/M-2 (Boreal Mixedwood - 40% Conifer)
+650,49,M-1/M-2 (50 PC),M-1/M-2 (Boreal Mixedwood - 50% Conifer)
+655,1,M-1/M-2 (55 PC),M-1/M-2 (Boreal Mixedwood - 55% Conifer)
+660,46,M-1/M-2 (60 PC),M-1/M-2 (Boreal Mixedwood - 60% Conifer)
+665,2,M-1/M-2 (65 PC),M-1/M-2 (Boreal Mixedwood - 65% Conifer)
+670,50,M-1/M-2 (70 PC),M-1/M-2 (Boreal Mixedwood - 70% Conifer)
+675,4,M-1/M-2 (75 PC),M-1/M-2 (Boreal Mixedwood - 75% Conifer)
+680,99,M-1/M-2 (80 PC),M-1/M-2 (Boreal Mixedwood - 80% Conifer)
