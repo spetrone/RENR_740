@@ -50,7 +50,7 @@ input_FBP_df <- weather_df %>%
 
 # Define the 5 fuel types
 #selectin most dominant fuel codes
-fuel_types <- c( "C1", "C2",  "C4", "D2", "M2")
+fuel_types <- c( "C1", "C2", "C3", "C4", "C5", "D1", "M2")
 
 
 # Create an empty list to store the dataframes for each fuel type
@@ -75,11 +75,14 @@ input_FBP_df[, (ncol(input_FBP_df)-10):ncol(input_FBP_df)] <- lapply(input_FBP_d
 
 input_FBP_df
 
+fbp(input_FBP_df[3,])
+
 FBP_df <- fbp(input_FBP_df)
 FBP_df
 
-
-#FBP_df <- FBP_df[order(FBP_df$ID), ]
+#re-order by ID - for some reason it is out of order
+FBP_df$ID <- as.numeric(FBP_df$ID)
+FBP_df <- FBP_df[order(FBP_df$ID), ]
 
 
 FBP_df2 <- cbind(FBP_df, input_FBP_df)
@@ -91,6 +94,10 @@ ignition_date <- as.POSIXct("2015-06-23", format="%Y-%m-%d")
 held_date <- as.POSIXct("2015-07-19", format="%Y-%m-%d")
 under_control_date <- as.POSIXct("2015-07-26", format="%Y-%m-%d")
 ext_date <- as.POSIXct("2016-02-09")
+pic_date <- as.POSIXct("2015-06-27")
+date24 <- as.POSIXct("2015-06-24")
+date25 <- as.POSIXct("2015-06-25")
+date26 <- as.POSIXct("2015-06-26")
 
 
 # Example: held_dates and corresponding labels
@@ -108,8 +115,11 @@ FBP_df2 <- FBP_df2 %>% filter(WEATHER_DATE >= ignition_date & WEATHER_DATE <= ex
 
 FBP_C2 <- FBP_df2 %>% filter(FuelType == "C2")
 
+FBP_short_all <- FBP_df2 %>% filter(WEATHER_DATE >= ignition_date & WEATHER_DATE <= under_control_date +5)
 
+FBP_xshort_all <- FBP_df2 %>% filter(WEATHER_DATE >= ignition_date & WEATHER_DATE <= pic_date)
 
+FBP_C22 <- FBP_short_all %>% filter(FuelType == "C2")
 #--------- for C2 only ----------------------
 # Reshape the data to long format (wide to long)
 df_long_C2 <- FBP_C2 %>%
@@ -119,21 +129,25 @@ df_long_C2 <- FBP_C2 %>%
 
 # Create and store each plot in a list (one plot per variable)
 plots_list_C2 <- lapply(unique(df_long_C2$variable), function(var) {
+  
+  subset_data <- subset(df_long_C2, variable == var)
+  max_y <- (0.9 * (max(subset_data$value, na.rm = TRUE)))
+  
   ggplot(subset(df_long_C2, variable == var), aes(x = WEATHER_DATE, y = value)) +
-    geom_vline(xintercept = held_date, linetype="dashed",color = "orangered3", size=1.5) +
-    geom_vline(xintercept = under_control_date, linetype="dashed",color = "orangered3", size=1.5) +
-    # Add custom labels for each vertical line
-    #geom_text(data = line_labels, aes(x = held_date, y = max(df_long_C2$value) + 5, 
-              #                        label = label),
-            #  color = "darkgrey", size = 4, angle = 90, vjust = -0.5) +  # Custom labels
+    geom_vline(xintercept = ignition_date, linetype="dashed",color = "red", size=1) +
+    geom_vline(xintercept = held_date, linetype="dashed",color = "orangered3", size=1) +
+    geom_vline(xintercept = under_control_date, linetype="dashed",color = "orangered3", size=1) +
+    geom_text(aes(x=ignition_date, y=max_y, label="\nIgnition"), colour="gray30", size = 6,  angle=90) +
+    geom_text(aes(x=held_date, y=max_y, label="\nBeing Held"), colour="gray30", size = 6,  angle=90) +
+    geom_text(aes(x=under_control_date, y=max_y, label="\nUnder Control"), size = 6, colour="gray30", angle=90) +
     geom_line(color = "blue") +  # Line color (you can adjust as needed)
     geom_point(color = "blue") + # Add points to the lines
     labs(x = "Date", y = var, title = paste(var, "for C2 Fuel Type")) +  # Add title
     theme_minimal() +
     theme(
-      plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),  
-      axis.title = element_text(size = 14),                        
-      axis.text = element_text(size = 12),
+      plot.title = element_text(hjust = 0.5, size = 18, face = "bold"),  
+      axis.title = element_text(size = 16),                        
+      axis.text = element_text(size = 14),
       legend.position =  element_blank()
     )
 })
@@ -141,13 +155,11 @@ plots_list_C2 <- lapply(unique(df_long_C2$variable), function(var) {
 
 # Name each plot in the list with the variable names for easy access
 names(plots_list_C2) <- unique(df_long_C2$variable)
-# Example of how to access a plot, for instance for "CFB"
-CFB_plot_CFB_C2 <- plots_list_C2[["CFB"]]
 
-CFB_plot_CFB_C2  <- CFB_plot_CFB_C2  + geom_hline(yintercept = 0.1, linetype="dashed", color="red", size=0.5)
-CFB_plot_CFB_C2  <- CFB_plot_CFB_C2  + geom_hline(yintercept = 0.9, linetype="dashed", color="red", size=0.5)
+plots_list_C2[["CFB"]]  <- plots_list_C2[["CFB"]]  + geom_hline(yintercept = 0.1, linetype="dashed", color="gray40", size=0.8)
+plots_list_C2[["CFB"]]  <- plots_list_C2[["CFB"]]  + geom_hline(yintercept = 0.9, linetype="dashed", color="gray40", size=0.8)
 
-CFB_plot_CFB_C2
+plots_list_C2[["CFB"]]
 
 
 
@@ -167,22 +179,35 @@ df_long <- FBP_df2 %>%
 
 
 plots_list <- lapply(unique(df_long$variable), function(var) {
+  
+  subset_data <- subset(df_long, variable == var)
+  
+  # Find the maximum value for the y-axis (for the current variable)
+  max_y <- (0.9 * (max(subset_data$value, na.rm = TRUE)))
+  
   ggplot(subset(df_long, variable == var), aes(x = WEATHER_DATE, y = value, color = FuelType, group = FuelType)) +
     geom_line(size = 0.8) +  # Set line thickness for C1 to 1.5, others to 1
     geom_point() +    # Add points to the lines
-    geom_vline(xintercept = held_date, linetype="dashed",color = "darkorange", size=1.5) +
-    geom_vline(xintercept = under_control_date, linetype="dashed",color = "darkorange", size=1.5) +
+    geom_vline(xintercept = ignition_date, linetype="dashed",color = "red", size=1) +
+    geom_vline(xintercept = held_date, linetype="dashed",color = "orangered3", size=1) +
+    geom_vline(xintercept = under_control_date, linetype="dashed",color = "orangered3", size=1) +
+    geom_text(aes(x=ignition_date, y=max_y, label="\nIgnition"), colour="gray30", size = 6,  angle=90) +
+    geom_text(aes(x=held_date, y=max_y, label="\nBeing Held"), colour="gray30", size = 6,  angle=90) +
+    geom_text(aes(x=under_control_date, y=max_y, label="\nUnder Control"), size = 6, colour="gray30", angle=90) +
     labs(x = "Date", y = var, title = paste(var, "by Fuel Type"), color = "Fuel Type") +  # Add legend title
     theme_minimal() + 
     theme(
-      plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),  
-      axis.title = element_text(size = 14),                        
-      axis.text = element_text(size = 12),
+      plot.title = element_text(hjust = 0.5, size = 18, face = "bold"),  
+      axis.title = element_text(size = 16),                        
+      axis.text = element_text(size = 14),
+      legend.title = element_text(size = 16, face = "bold"),   # Increase legend title size
+      legend.text = element_text(size = 14),                    # Increase legend text size
+      legend.key.size = unit(1.5, "cm")     
     #  legend.position = c(0.9, 0.85)  # Position the legend inside the plot
     ) +
     scale_size_continuous(range = c(0.8, 1.5)) +  # Control the size scale for lines
     scale_color_manual(values = c("C1" = "brown", "C2" = "blue", "C3" = "deepskyblue",
-                                  "C4" = "darkorchid1", "C5" = "slateblue", "D2" = "darkolivegreen3", "M2" = "aquamarine4"))  # Manually select colors
+                                  "C4" = "darkorchid1", "C5" = "slateblue", "D1" = "darkolivegreen3", "M2" = "aquamarine4"))  # Manually select colors
 })
 
 
@@ -192,12 +217,12 @@ plots_list <- lapply(unique(df_long$variable), function(var) {
 names(plots_list) <- unique(df_long$variable)
 
 # Example of how to access a plot, for instance for "CFB"
-CFB_plot_CFB <- plots_list[["CFB"]]
 
-CFB_plot_CFB  <- CFB_plot_CFB  + geom_hline(yintercept = 0.1, linetype="dashed", color="red", size=0.5)
-CFB_plot_CFB  <- CFB_plot_CFB  + geom_hline(yintercept = 0.9, linetype="dashed", color="red", size=0.5)
 
-CFB_plot_CFB
+plots_list[["CFB"]]  <- plots_list[["CFB"]]  + geom_hline(yintercept = 0.1, linetype="dashed", color="gray40", size=0.8)
+plots_list[["CFB"]]  <- plots_list[["CFB"]] + geom_hline(yintercept = 0.9, linetype="dashed", color="gray40", size=0.8)
+
+plots_list[["CFB"]]
 
 
 # Save each plot to a file, for example, as PNG files
@@ -205,3 +230,179 @@ lapply(names(plots_list), function(var) {
   ggsave(paste0(var, "_plot.png"), plot = plots_list[[var]], width = 10, height = 6)
 })
 
+
+
+#--------------------- For shorter time interval -------------------------------
+#--------- for C2 only ----------------------
+# Reshape the data to long format (wide to long)
+df_long_C22 <- FBP_C22 %>%
+  pivot_longer(cols = -c(WEATHER_DATE, FuelType),  # Exclude WEATHER_DATE and FuelType columns
+               names_to = "variable",  # Create a new column for the original column names
+               values_to = "value")    # Create a new column for the values
+
+# Create and store each plot in a list (one plot per variable)
+plots_list_C22 <- lapply(unique(df_long_C22$variable), function(var) {
+  
+  subset_data <- subset(df_long_C22, variable == var)
+  max_y <- (0.9 * (max(subset_data$value, na.rm = TRUE)))
+  
+  ggplot(subset(df_long_C22, variable == var), aes(x = WEATHER_DATE, y = value)) +
+    geom_vline(xintercept = ignition_date, linetype="dashed",color = "red", size=1) +
+    geom_vline(xintercept = held_date, linetype="dashed",color = "orangered3", size=1) +
+    geom_vline(xintercept = under_control_date, linetype="dashed",color = "orangered3", size=1) +
+    geom_text(aes(x=ignition_date, y=max_y, label="\nIgnition"), colour="gray30", size = 6,  angle=90) +
+    geom_text(aes(x=held_date, y=max_y, label="\nBeing Held"), colour="gray30", size = 6,  angle=90) +
+    geom_text(aes(x=under_control_date, y=max_y, label="\nUnder Control"), size = 6, colour="gray30", angle=90) +
+    geom_line(color = "blue") +  # Line color (you can adjust as needed)
+    geom_point(color = "blue") + # Add points to the lines
+    labs(x = "Date", y = var, title = paste(var, "for C2 Fuel Type")) +  # Add title
+    theme_minimal() +
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 18, face = "bold"),  
+      axis.title = element_text(size = 16),                        
+      axis.text = element_text(size = 14),
+      legend.position =  element_blank()
+    )
+})
+
+
+# Name each plot in the list with the variable names for easy access
+names(plots_list_C22) <- unique(df_long_C22$variable)
+
+plots_list_C22[["CFB"]]  <- plots_list_C22[["CFB"]]  + geom_hline(yintercept = 0.1, linetype="dashed", color="gray40", size=0.8)
+plots_list_C22[["CFB"]]  <- plots_list_C22[["CFB"]]  + geom_hline(yintercept = 0.9, linetype="dashed", color="gray40", size=0.8)
+
+plots_list_C22[["CFB"]]
+
+
+
+# Save each plot to a file, for example, as PNG files
+lapply(names(plots_list_C22), function(var) {
+  ggsave(paste0("./short/", var, "_C2_plot.png"), plot = plots_list_C22[[var]], width = 10, height = 6)
+})
+
+
+
+#------- For All Fuel Types -----------------------
+
+df_long2 <- FBP_short_all %>%
+  pivot_longer(cols = CFB:TFC,  # Reshape only the CFB and CFC columns into long format
+               names_to = "variable",  # Name for the column that will hold the variable names
+               values_to = "value")    # Name for the column that will hold the values
+
+
+plots_list2 <- lapply(unique(df_long2$variable), function(var) {
+  
+  subset_data <- subset(df_long2, variable == var)
+  
+  # Find the maximum value for the y-axis (for the current variable)
+  max_y <- (0.9 * (max(subset_data$value, na.rm = TRUE)))
+  
+  ggplot(subset(df_long2, variable == var), aes(x = WEATHER_DATE, y = value, color = FuelType, group = FuelType)) +
+    geom_line(size = 0.8) +  # Set line thickness for C1 to 1.5, others to 1
+    geom_point() +    # Add points to the lines
+    geom_vline(xintercept = ignition_date, linetype="dashed",color = "red", size=1) +
+    geom_vline(xintercept = held_date, linetype="dashed",color = "orangered3", size=1) +
+    geom_vline(xintercept = under_control_date, linetype="dashed",color = "orangered3", size=1) +
+    geom_text(aes(x=ignition_date, y=max_y, label="\nIgnition"), colour="gray30", size = 6,  angle=90) +
+    geom_text(aes(x=held_date, y=max_y, label="\nBeing Held"), colour="gray30", size = 6,  angle=90) +
+    geom_text(aes(x=under_control_date, y=max_y, label="\nUnder Control"), size = 6, colour="gray30", angle=90) +
+    labs(x = "Date", y = var, title = paste(var, "by Fuel Type"), color = "Fuel Type") +  # Add legend title
+    theme_minimal() + 
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 18, face = "bold"),  
+      axis.title = element_text(size = 16),                        
+      axis.text = element_text(size = 14),
+      legend.title = element_text(size = 16, face = "bold"),   # Increase legend title size
+      legend.text = element_text(size = 14),                    # Increase legend text size
+      legend.key.size = unit(1.5, "cm")     
+      #  legend.position = c(0.9, 0.85)  # Position the legend inside the plot
+    ) +
+    scale_size_continuous(range = c(0.8, 1.5)) +  # Control the size scale for lines
+    scale_color_manual(values = c("C1" = "brown", "C2" = "blue", "C3" = "deepskyblue",
+                                  "C4" = "darkorchid1", "C5" = "slateblue", "D1" = "darkolivegreen3", "M2" = "aquamarine4"))  # Manually select colors
+})
+
+
+
+
+# Name each plot in the list with the variable names for easy access
+names(plots_list2) <- unique(df_long2$variable)
+
+# Example of how to access a plot, for instance for "CFB"
+
+
+plots_list2[["CFB"]]  <- plots_list2[["CFB"]]  + geom_hline(yintercept = 0.1, linetype="dashed", color="gray40", size=0.8)
+plots_list2[["CFB"]]  <- plots_list2[["CFB"]] + geom_hline(yintercept = 0.9, linetype="dashed", color="gray40", size=0.8)
+
+plots_list2[["CFB"]]
+
+
+# Save each plot to a file, for example, as PNG files
+lapply(names(plots_list2), function(var) {
+  ggsave(paste0("./short/", var, "_plot.png"), plot = plots_list2[[var]], width = 10, height = 6)
+})
+
+
+#-------------- Extra short - for pictures --------------------------------
+#------- For All Fuel Types -----------------------
+
+df_long3 <- FBP_xshort_all %>%
+  pivot_longer(cols = CFB:TFC,  # Reshape only the CFB and CFC columns into long format
+               names_to = "variable",  # Name for the column that will hold the variable names
+               values_to = "value")    # Name for the column that will hold the values
+
+
+plots_list3 <- lapply(unique(df_long3$variable), function(var) {
+  
+  subset_data <- subset(df_long2, variable == var)
+  
+  # Find the maximum value for the y-axis (for the current variable)
+  max_y <- (0.9 * (max(subset_data$value, na.rm = TRUE)))
+  
+  ggplot(subset(df_long3, variable == var), aes(x = WEATHER_DATE, y = value, color = FuelType, group = FuelType)) +
+    geom_line(size = 0.8) +  # Set line thickness for C1 to 1.5, others to 1
+    geom_point() +    # Add points to the lines
+    geom_vline(xintercept = date24, linetype="dashed",color = "gray30", size=1) +
+    geom_vline(xintercept = date25, linetype="dashed",color = "gray30", size=1) +
+    geom_vline(xintercept = date26, linetype="dashed",color = "gray30", size=1) +
+    #geom_text(aes(x=date24, y=max_y, label="\nJune 24"), colour="gray30", size = 4,  angle=90) +
+    #geom_text(aes(x=date25, y=max_y, label="\nJune 25"), colour="gray30", size = 4,  angle=90) +
+    #geom_text(aes(x=date26, y=max_y, label="\nJune 26"), size = 4, colour="gray30", angle=90) +
+    geom_vline(xintercept = ignition_date, linetype="dashed",color = "red", size=1) +
+    geom_text(aes(x=ignition_date, y=max_y, label="\nIgnition"), colour="gray30", size = 6,  angle=90) +
+    labs(x = "Date", y = var, title = paste(var, "by Fuel Type"), color = "Fuel Type") +  # Add legend title
+    theme_minimal() + 
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 18, face = "bold"),  
+      axis.title = element_text(size = 16),                        
+      axis.text = element_text(size = 14),
+      legend.title = element_text(size = 16, face = "bold"),   # Increase legend title size
+      legend.text = element_text(size = 14),                    # Increase legend text size
+      legend.key.size = unit(1.5, "cm")     
+      #  legend.position = c(0.9, 0.85)  # Position the legend inside the plot
+    ) +
+    scale_size_continuous(range = c(0.8, 1.5)) +  # Control the size scale for lines
+    scale_color_manual(values = c("C1" = "brown", "C2" = "blue", "C3" = "deepskyblue",
+                                  "C4" = "darkorchid1", "C5" = "slateblue", "D1" = "darkolivegreen3", "M2" = "aquamarine4"))  # Manually select colors
+})
+
+
+
+
+# Name each plot in the list with the variable names for easy access
+names(plots_list3) <- unique(df_long3$variable)
+
+# Example of how to access a plot, for instance for "CFB"
+
+
+plots_list3[["CFB"]]  <- plots_list3[["CFB"]]  + geom_hline(yintercept = 0.1, linetype="dashed", color="gray40", size=0.8)
+plots_list3[["CFB"]]  <- plots_list3[["CFB"]] + geom_hline(yintercept = 0.9, linetype="dashed", color="gray40", size=0.8)
+
+plots_list3[["CFB"]]
+
+
+# Save each plot to a file, for example, as PNG files
+lapply(names(plots_list3), function(var) {
+  ggsave(paste0("./xshort/", var, "_plot.png"), plot = plots_list3[[var]], width = 10, height = 6)
+})

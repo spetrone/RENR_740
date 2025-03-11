@@ -54,7 +54,7 @@ burned_chart <- burned_chart %>%
                                "violet", "deepskyblue")) +
   labs(title = "Burned Fuel Types") + 
   theme(
-    plot.title = element_text(hjust = 0.5, size = 14, face = "bold")
+    plot.title = element_text(hjust = 0.5, size = 12, face = "bold")
   ) 
 
 
@@ -85,7 +85,7 @@ unburned_chart <- unburned_chart %>%
                                "violet", "deepskyblue")) +
   labs(title = "Unburned Fuel Types") + 
   theme(
-    plot.title = element_text(hjust = 0.5, size = 14, face = "bold")
+    plot.title = element_text(hjust = 0.5, size = 12, face = "bold")
   ) 
 
 unburned_chart

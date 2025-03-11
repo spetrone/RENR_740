@@ -1,0 +1,85 @@
+<!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
+<qgis version="3.40.3-Bratislava">
+  <identifier>WF_HISTORICAL_FIREPOLY</identifier>
+  <parentidentifier></parentidentifier>
+  <language>ENG</language>
+  <type>dataset</type>
+  <title>LWF_161_2015_perimeter</title>
+  <abstract>Wildfires from 1931 to the end of the 2018 Fire Year (December31, 2018) within the forested area of the province have been recorded and mapped in a variety of different ways. Fire perimeters have been captured using hand sketches, aerial photography, satellite imagery, global positioning systems and infrared scanning methods and have been archived in various forms. These include the transfer of line work to paper or films of forest inventory maps, provincial base maps or more recently captured in digital form. All these historical fires that have a polygon line representing the fire perimeter have recently had the line work entered into a Geographic Information System. This data set does not represent every fire from the fire years. Rather, it represents some of the larger fires that were capable of capturing.
+
+Recording the fire perimeters accurately on maps within the forested area of the province is essential for fire incidence analysis, timber loss, timber salvage, maintenance of the provincial forest inventory, timber stand origins and for assisting in the making of sound forest management decisions.
+
+The compiling and storage of the individual fire maps have evolved from hard copy storage of the various fire maps on stick plans to hand drafting all fires greater than 200 hectares on 1:250 000 planimetric base maps to having all mapped fires digitized and entered into a Geographic Information System at various accuracy levels depending upon original data available.</abstract>
+  <keywords vocabulary="Search keys">
+    <keyword>fire perimeter</keyword>
+    <keyword>19310101 to 20181231</keyword>
+    <keyword>fire</keyword>
+    <keyword>fire incidence</keyword>
+    <keyword>Alberta</keyword>
+    <keyword>historical fire</keyword>
+    <keyword>history</keyword>
+  </keywords>
+  <keywords vocabulary="gmd:topicCategory">
+    <keyword>fire perimeter</keyword>
+    <keyword>fire</keyword>
+    <keyword>fire incidence</keyword>
+    <keyword>historical fire</keyword>
+    <keyword>history</keyword>
+  </keywords>
+  <contact>
+    <contactAddress>
+      <type>both</type>
+      <address>9th Floor, 9920 - 108 Street Northwest</address>
+      <city>Edmonton</city>
+      <administrativearea>Alberta</administrativearea>
+      <postalcode>T5K2M4</postalcode>
+      <country>CA</country>
+    </contactAddress>
+    <name>Wildfire Geospatial Intelligence Unit, Wildfire Operations, Wildfire Management Branch, Forestry Division</name>
+    <organization>Agriculture and Forestry, Government of Alberta</organization>
+    <position></position>
+    <voice>(780) 422-4438</voice>
+    <fax></fax>
+    <email>WF.AWHQ-GIS@gov.ab.ca</email>
+    <role></role>
+  </contact>
+  <links>
+    <link format="" description="" name="" mimeType="" url="https://maps.env.gov.ab.ca/genesis_winauth/rest/services/Historical_Fires/Latest/MapServer" type="" size=""/>
+  </links>
+  <history>Added 2018 Fire Year data - March 1, 2019 Updated Photo Interpreted Boundaries for: HWF-196-2017; HWF-221-2017; HWF-242-2017; HWF-246-2017; PWF-068-2017; RWF-062-2017; RWF-063-2017; RWF-065-2017; RWF-068-2017; RWF-078-2017</history>
+  <dates>
+    <date value="2018-04-03T12:00:00" type="Published"/>
+    <date value="2018-04-03T12:00:00" type="Revised"/>
+  </dates>
+  <fees></fees>
+  <rights>None</rights>
+  <encoding></encoding>
+  <crs>
+    <spatialrefsys nativeFormat="Wkt">
+      <wkt>PROJCRS["NAD83(CSRS) / Alberta 10-TM (Forest)",BASEGEOGCRS["NAD83(CSRS)",DATUM["NAD83 Canadian Spatial Reference System",ELLIPSOID["GRS 1980",6378137,298.257222101,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4617]],CONVERSION["Alberta 10-degree TM (Forest)",METHOD["Transverse Mercator",ID["EPSG",9807]],PARAMETER["Latitude of natural origin",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8801]],PARAMETER["Longitude of natural origin",-115,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8802]],PARAMETER["Scale factor at natural origin",0.9992,SCALEUNIT["unity",1],ID["EPSG",8805]],PARAMETER["False easting",500000,LENGTHUNIT["metre",1],ID["EPSG",8806]],PARAMETER["False northing",0,LENGTHUNIT["metre",1],ID["EPSG",8807]]],CS[Cartesian,2],AXIS["(E)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["(N)",north,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["Province-wide spatial data management."],AREA["Canada - Alberta."],BBOX[48.99,-120,60,-109.98]],ID["EPSG",3402]]</wkt>
+      <proj4>+proj=tmerc +lat_0=0 +lon_0=-115 +k=0.9992 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs</proj4>
+      <srsid>1360</srsid>
+      <srid>3402</srid>
+      <authid>EPSG:3402</authid>
+      <description>NAD83(CSRS) / Alberta 10-TM (Forest)</description>
+      <projectionacronym>tmerc</projectionacronym>
+      <ellipsoidacronym>EPSG:7019</ellipsoidacronym>
+      <geographicflag>false</geographicflag>
+    </spatialrefsys>
+  </crs>
+  <extent>
+    <spatial maxx="-108.27497700000000691" miny="48.87643500000000074" minx="-122.13723699999999894" minz="0" maxy="60.75988600000000162" dimensions="2" maxz="0" crs="EPSG:3402"/>
+    <temporal>
+      <period>
+        <start>2018-04-03T18:00:00Z</start>
+        <end></end>
+      </period>
+    </temporal>
+    <temporal>
+      <period>
+        <start></start>
+        <end></end>
+      </period>
+    </temporal>
+  </extent>
+</qgis>
